@@ -9,5 +9,22 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r packages, message=FALSE, warning=FALSE, include=FALSE}
+
+library(tidyverse)
+library(tidyjson)
+library(jsonlite)
+```
+
 
 # Project 2
+
+So the data is presented in a json file. It is a list of 16 (or 20 for 2021) lists, each representing a unique job category: i.e. ux designer, recruiter or marketing. Within each of the 16 lists, are 2 lists: the first is a list of 4, describing position, location, job time (full or part time), and start time. The second list contains job descriptions associated with that job category. 
+
+```{r}
+indeed_2020 <- jsonlite::read_json("Indeed_data/indeed_job_descs_2020_09_20.json")
+
+indeed_2021 <- jsonlite::read_json("Indeed_data/indeed_job_descs_2021_01_25.json")
+```
+
+
