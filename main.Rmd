@@ -23,7 +23,7 @@ library(httr)
 
 So the data is presented in a json file. It is a list of 16 (or 20 for 2021) lists, each representing a unique job category: i.e. ux designer, recruiter or marketing. Within each of the 16 lists, are 2 lists: the first is a list of 4, describing position, location, job time (full or part time), and start time. The second list contains job descriptions associated with that job category.
 
-```{r}
+```{r echo=FALSE}
 indeed_2020_raw <- fromJSON("Indeed_data/indeed_job_descs_2020_09_20.json")
 
 indeed_2021 <- fromJSON("Indeed_data/indeed_job_descs_2021_01_25.json")
@@ -33,7 +33,7 @@ indeed_2021 <- fromJSON("Indeed_data/indeed_job_descs_2021_01_25.json")
 
 Here is an example of the list of categories, and associated characteristics.
 
-```{r}
+```{r echo=FALSE}
 df_json20 <- indeed_2020_raw %>% 
   map_if(is.data.frame, list) %>% 
   as_tibble()
@@ -46,7 +46,7 @@ request_parameters <- as.data.frame(df_json20$request_params)
 
 Here is an example of a job description:
 
-```{r}
+```{r echo=FALSE}
 #list, because of nested format? 
 job_descriptions <- df_json20$job_descriptions
 
@@ -56,26 +56,21 @@ class(job_descriptions)
 
 job_categories <- request_parameters$q
 
-
-
 ```
 
 ### Can the data be representative?
 
-```{r}
+```{r echo=FALSE}
 job_categories
 ```
+
 First, there are only 16 categories here. Definitely not a comprehensive view of the job market, so if you are really set about going into a field that is not listed, this loop project explained below would not be a good fit. 
 
 Another question that would be reasonable to ask is what is the distribution of job postings per category?
 
 
 
-
-```{r message=FALSE, warning=FALSE}
-
-```
-```{r message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 # They are all in new york so I'm throwing out the state column
 # unique(long_df$l)
 
@@ -84,7 +79,7 @@ Another question that would be reasonable to ask is what is the distribution of 
 
 #convert to long tibble instead of wide
 long_df <- unnest(df_json20) %>% 
-  pivot_longer(df_cleaned, cols = 5:574, names_to = "post_id", values_to = "description") %>%
+  pivot_longer(cols = 5:574, names_to = "post_id", values_to = "description") %>%
   select(-l, -jt) %>% 
   rename(category = q)
 
@@ -99,14 +94,8 @@ ggplot(data = na_numbers, aes(x = category, y = non_na_count)) +
   coord_flip()
 
 ```
+
 Hopefully you don't want to be a HR specialist because the data is not as comprehensive than the rest. But otherwise, it seems to be very equal across the categories. 
-
-
-```{r}
-mydf<-data.frame('col_1' = c('A','A','B','B'), 'col_2' = c(100,NA, 90,30))
-mydf
-
-```
 
 
 Here is an (shortened) example of how it appears in JSON:
@@ -116,5 +105,7 @@ Here is an (shortened) example of how it appears in JSON:
 ### Data Quality Issue
 Some companies appear to have gotten lazy in their copy and pasting between websites and have smashed some words together. Because it is a rare enough occurence, it will hopefully not have a large effect on the data. 
 
+
+## Tokenize the data
 
 
