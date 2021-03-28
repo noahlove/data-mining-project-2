@@ -13,8 +13,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 library(tidyjson)
-library(jsonlite)
-library(httr)
 ```
 
 # Project 2
@@ -50,8 +48,6 @@ Here is an example of a job description:
 #list, because of nested format? 
 job_descriptions <- df_json20$job_descriptions
 
-class(job_descriptions)
-
 #what types of jobs
 
 job_categories <- request_parameters$q
@@ -78,11 +74,25 @@ Another question that would be reasonable to ask is what is the distribution of 
 #unique(long_df$part_or_full)
 
 #convert to long tibble instead of wide
-long_df <- unnest(df_json20) %>% 
-  pivot_longer(cols = 5:574, names_to = "post_id", values_to = "description") %>%
+
+#There is still a problem here. Some of these don't keep the description for some reason
+
+unnested_dataframe <- unnest(df_json20, cols = )
+
+dim(unnested_dataframe)
+
+#unnested_dataframe  # this shows unnesting works appropriately
+
+long_df <- unnested_dataframe %>% 
+  pivot_longer(cols = 5:574, names_to = "post_id", values_to = "description", values_drop_na = FALSE) %>% # it is this line that messes things up, it appears that every other category is appropriately grouped into the column.
   select(-l, -jt) %>% 
   rename(category = q)
 
+long_df
+
+```
+
+```{r}
 #see how many na per group
 na_numbers <- long_df %>% 
   group_by(category) %>% 
@@ -95,6 +105,7 @@ ggplot(data = na_numbers, aes(x = category, y = non_na_count)) +
 
 ```
 
+
 Hopefully you don't want to be a HR specialist because the data is not as comprehensive than the rest. But otherwise, it seems to be very equal across the categories. 
 
 
@@ -103,9 +114,20 @@ Here is an (shortened) example of how it appears in JSON:
 > "2ccc2596d13c54d4": "Job to be done\nWe\u2019re the best way to get better.\n\nAbout Buoy Health:\nBuoy builds a digital health tool that helps people \u2013 from the moment they get sick \u2013 start their health care on the right foot. Started by a team of doctors and computer scientists working at the Harvard Innovation Laboratory in Boston MA, Buoy was developed in direct response to the downward spiral we\u2019ve all faced when we attempt to self-diagnose our symptoms online...."
 
 ### Data Quality Issue
-Some companies appear to have gotten lazy in their copy and pasting between websites and have smashed some words together. Because it is a rare enough occurence, it will hopefully not have a large effect on the data. 
+Some companies appear to have gotten lazy in their copy and pasting between websites and have smashed some words together. Because it is a rare enough occurrence, it will hopefully not have a large effect on the data. 
 
 
 ## Tokenize the data
+
+```{r}
+unnest(df_json20, cols = )
+```
+
+
+```{r}
+# doesn't work for second category
+# long_df
+```
+
 
 
