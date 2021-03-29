@@ -1,0 +1,109 @@
+University Address
+229 Commonwealth Avenue
+Boston, MA 02116
+
+AJINKYA K. NENE
+ajinkyanene.com
+ajinkya10@gmail.com
+Phone: (408)-623-7531
+
+Home Address
+1194 Miller Avenue
+San Jose, CA 95129
+
+EDUCATION
+Massachusetts Institute of Technology (MIT)
+Cambridge, MA
+Master of Engineering – Systems Concentration; GPA: 5.0/5.0
+September 2019 – May 2020
+o Thesis: Deep Learning Approaches to Universal and Practical Steganalysis
+o Selected Coursework: Network and Computer Security; Computer Systems; Operating Systems; Machine Learning
+Bachelor of Science in Computer Science; GPA: 5.0/5.0
+September 2016 – May 2020
+o Selected Coursework: Performance Engineering, Software Construction, Design and Analysis of Algorithms; Financial Engineering
+
+WORK EXPERIENCE
+Newfront Insurance
+San Francisco, CA
+Software Engineering Intern
+May 2019 – September 2019
+o Analytics Infrastructure: Improved analytics reporting infrastructure to increase developer velocity and enable transparency
+o Data Modeling: Designed and launched a data remodel for insurance policies to enable new business use cases
+Eian
+Stanford, CA
+Contract Software Engineer
+December 2018 – March 2019
+o Core Infrastructure: Developed core blockchain technologies in Rust/C++ for ledger and transaction modules
+o Application Development: Created several demo applications to showcase potential of the Eian cryptographic network
+McKinsey and Company
+New York City, NY
+Summer Business Analyst
+June 2018 – August 2018
+o Digital Transformation: Worked with a private equity client to launch a digital transformation in their hiring processes
+o Insurance Strategy: Designed new underwriting workflows that leveraged modern machine learning capabilities to improve efficiency
+Investment Technology Group
+New York City, NY
+Machine Learning Intern
+January 2018 – February 2018
+o Execution Efficiency: Developed machine learning tools to improve trade execution efficiency for the ActiveAI product line
+o Experimental Trading Algorithms: Developed proof-of-concept reinforcement learning platform for automatic trade execution
+Microsoft
+Bellevue, WA
+Software Engineering Intern
+June 2017 – August 2017
+o Testing Infrastructure: Designed testing infrastructure that enabled automated QA testing for Android/iOS applications
+o Systems Integration: Integrated applications into the Xamarin platform to enable cross-architecture code compatibility.
+Square Peg Capital
+Cambridge, MA
+Winter Analyst Extern
+January 2017 – February 2017
+o Company Discovery: Discovered and analyzed several machine learning startups as part of due diligence
+o Market Analysis: Created extensive reports on current market trends in niche consumer product spaces
+
+ACTIVITIES AND LEADERSHIP
+
+Eta Kappa Nu Honor Society
+Cambridge, MA
+President
+September 2019 – May 2020
+o Overview: National honor society for Electrical Engineering and Computer Science (top 10% of MIT are invited to join)
+o Tutoring Service Revamp: Successfully lobbied MIT administration to increase student-tutoring pay and increased the number of tutors
+MIT Sloan Business Club
+Cambridge, MA
+Board Education Program Director
+September 2016 – May 2020
+o Overview: MIT’s premier business organization with initiatives in finance, consulting, and entrepreneurship
+o Education Program: Organized and developed the education program that introduces new members to business fundamentals
+MIT Data to AI Laboratory
+Cambridge, MA
+Research Assistant
+January 2019 – May 2020
+o Overview: The lab focuses on building large scale AI systems as well as developing fundamental AI algorithms
+o AI for Security: Researched how AI systems can be deployed in security applications to prevent cybersecurity threats
+MIT Initiative on the Digital Economy
+Cambridge, MA
+Research Assistant
+January – May 2017
+o Overview: The initiative focuses on how people and businesses will work, interact, and prosper in an era of digital transformation
+o Technological Factors for Stock Price Prediction: Researched how API usage impacts company growth and stock price
+
+PROJECTS
+o
+o
+o
+
+StegBench (github.com/DAI-Lab/StegBench): Designed python library to enable robust and seamless evaluation of steganalysis algorithms
+Cryptographically Secure Dark Pools: Designed and implemented a secure dark pool for anonymous transactions (6.857 Final Project)
+Machine Learning to Improve Automobile Vehicle Design: Applied machine learning to automobile purchase data to identify market
+segmentation and discover successful vehicle designs (6.867 Final Project)
+
+SKILLS AND INTEREST
+o
+o
+o
+
+Programming: Proficiency in Java, Python, R, Rust, C++, C, C#, HTML, CSS, JavaScript, PHP, SQL, Scheme
+Languages: Proficiency in English, Hindi and Marathi. Working Proficiency in Spanish
+Interests: Tennis, Classic Novels, Weightlifting, Blogs, Competitive Programming, Running, Podcasts
+
+
