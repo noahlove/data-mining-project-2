@@ -1,0 +1,59 @@
+---
+title: "R Notebook"
+author: admin
+date: 3/28/2021
+output: html_document
+---
+```{r}
+library(text2vec)
+library(data.table)
+
+data <- read.csv("Indeed_data\\merged.csv")
+
+it_train <- itoken(
+  data$job_desc,
+  preprocessor = tolower,
+  tokenizer = word_tokenizer,
+  ids = data$job_id,
+  progressbar = FALSE
+)
+
+stop_words <- c("a","an","and","are","as","at","be","by","for","from","have","in","is","i","not","of","on","or","other","our","ours","that","the","their","this","to","we","who","with","you","your","yours","me","my","myself","ourselves","")
+
+vocab <- create_vocabulary(
+  it_train,
+  stopwords = stop_words,
+  # ngram = c(1L, 2L)
+)
+
+tail(vocab, 5)
+
+```
+```{r}
+vectorizer <- vocab_vectorizer(vocab)
+t1 <- Sys.time()
+dtm_train <- create_dtm(it_train, vectorizer)
+print(difftime(Sys.time(), t1, units = 'sec'))
+print(dim(dtm_train))
+```
+# Create Cosine Dissimilarity Matrix
+...and store it to CSV file.
+
+```{r}
+tfidf <- TfIdf$new()
+dtm_tfidf <- fit_transform(dtm_train, tfidf)
+
+cos_dissm <- sim2(
+  x = dtm_tfidf,
+  method = "cosine",
+  norm = "l2"
+)
+
+cos_dissm[1:2, 1:5]
+
+write.csv(
+  as.matrix(cos_dissm),
+  row.names = TRUE,
+  file = gzfile("Indeed_data/cos_dissm_mat.csv.gz", "w+b")
+)
+```
