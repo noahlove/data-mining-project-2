@@ -5,12 +5,6 @@ date: 3/27/2021
 output: html_document
 ---
 ```{r}
-library(text2vec)
-library(jsonlite)
-
-data <- read_json("Indeed_data/indeed_job_descs_2021_01_25.json")
-```
-```{r}
 library(stringr)
 
 indeed_iterate_data <- function(data, callback)
