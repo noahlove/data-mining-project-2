@@ -9,9 +9,33 @@ library(text2vec)
 library(data.table)
 
 data <- read.csv("Indeed_data\\merged.csv")
+data$is_fulltime <- as.logical(data$is_fulltime)
+data$is_contract <- as.logical(data$is_contract)
+data$is_parttime <- as.logical(data$is_parttime)
+data$is_internship <- as.logical(data$is_internship)
+data$salary_min <- as.integer(data$salary_min)
+data$salary_max <- as.integer(data$salary_max)
+```
+```{r}
+data$to_parse <- rep(NA, nrow(data))
 
-it_train <- itoken(
-  data$job_desc,
+for (i in seq_len(nrow(data)))
+{
+  row <- data[i,]
+
+  x <- paste(row$job_location, row$job_title, row$job_desc)
+  if (row$is_fulltime) x <- paste(x, "fulltime full time ")
+  if (row$is_parttime) x <- paste(x, "parttime part time ")
+  if (row$is_internship) x <- paste(x, "internship ")
+  if (row$is_contract) x <- paste(x, "contract ")
+
+  row$to_parse <- x
+  data[i,] <- row
+}
+```
+```{r}
+it <- itoken(
+  data$to_parse,
   preprocessor = tolower,
   tokenizer = word_tokenizer,
   ids = data$job_id,
@@ -21,9 +45,9 @@ it_train <- itoken(
 stop_words <- c("a","an","and","are","as","at","be","by","for","from","have","in","is","i","not","of","on","or","other","our","ours","that","the","their","this","to","we","who","with","you","your","yours","me","my","myself","ourselves","")
 
 vocab <- create_vocabulary(
-  it_train,
-  stopwords = stop_words,
-  # ngram = c(1L, 2L)
+        it,
+        stopwords = stop_words,
+        # ngram = c(1L, 2L)
 )
 
 tail(vocab, 5)
@@ -31,17 +55,16 @@ tail(vocab, 5)
 ```
 ```{r}
 vectorizer <- vocab_vectorizer(vocab)
-t1 <- Sys.time()
-dtm_train <- create_dtm(it_train, vectorizer)
-print(difftime(Sys.time(), t1, units = 'sec'))
-print(dim(dtm_train))
+dtm <- create_dtm(it, vectorizer)
+print(dim(dtm))
 ```
+
 # Create Cosine Dissimilarity Matrix
 ...and store it to CSV file.
 
 ```{r}
 tfidf <- TfIdf$new()
-dtm_tfidf <- fit_transform(dtm_train, tfidf)
+dtm_tfidf <- fit_transform(dtm, tfidf)
 
 cos_dissm <- sim2(
   x = dtm_tfidf,
@@ -56,4 +79,11 @@ write.csv(
   row.names = TRUE,
   file = gzfile("Indeed_data/cos_dissm_mat.csv.gz", "w+b")
 )
+
+```
+
+# How to load:
+
+```{r}
+cos_dissm_2 <- read.csv(file = gzfile("Indeed_data/cos_dissm_mat.csv.gz"), stringsAsFactors = FALSE)
 ```
