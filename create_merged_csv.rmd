@@ -1,10 +1,11 @@
 ---
-title: "R Notebook"
-author: admin
+title: "Code to generate merged.csv"
+author: "Noah Love and Ido Li On"
 date: 3/27/2021
 output: html_document
 ---
 ```{r}
+library(collections)
 library(stringr)
 
 indeed_iterate_data <- function(data, callback)
@@ -40,11 +41,16 @@ indeed_iterate_files <- function(callback)
 
 indeed_csv_row_count <- function()
 {
+  seen_job_ids <- dict()
   row_count <- 0
   indeed_iterate_files(
           function(job_location, job_time, job_title, job_id, job_desc)
           {
-            row_count <<- row_count + 1
+            if (!seen_job_ids$has(job_id))
+            {
+              seen_job_ids$set(job_id, 1)
+              row_count <<- row_count + 1
+            }
           }
   )
   row_count
@@ -65,49 +71,56 @@ indeed_csv_build <- function(output_file)
 
   row_index <- 1
 
+  seen_job_ids <- dict()
+
   indeed_iterate_files(
           function(job_location, job_time, job_title, job_id, job_desc)
           {
-            csv_row <- as.list(rep(CSV_NA, length(CSV_COLUMNS)))
-            names(csv_row) <- CSV_COLUMNS
-
-            # parse job time
-            csv_row$is_fulltime <- job_time == "fulltime"
-            csv_row$is_parttime <- FALSE
-            csv_row$is_contract <- FALSE
-            csv_row$is_internship <- FALSE
-
-            t <- str_extract(job_desc, REGEX_JOB_TIME)
-            if (!is.na(t))
+            if (!seen_job_ids$has(job_id))
             {
-              if (str_detect(t, "Part")) csv_row$is_parttime <- TRUE
-              if (str_detect(t, "Contract")) csv_row$is_contract <- TRUE
-              if (str_detect(t, "Intern")) csv_row$is_internship <- TRUE
-              job_desc <- str_remove_all(job_desc, REGEX_JOB_TIME)
+              seen_job_ids$set(job_id, 1)
+
+              csv_row <- as.list(rep(CSV_NA, length(CSV_COLUMNS)))
+              names(csv_row) <- CSV_COLUMNS
+
+              # parse job time
+              csv_row$is_fulltime <- job_time == "fulltime"
+              csv_row$is_parttime <- FALSE
+              csv_row$is_contract <- FALSE
+              csv_row$is_internship <- FALSE
+
+              t <- str_extract(job_desc, REGEX_JOB_TIME)
+              if (!is.na(t))
+              {
+                if (str_detect(t, "Part")) csv_row$is_parttime <- TRUE
+                if (str_detect(t, "Contract")) csv_row$is_contract <- TRUE
+                if (str_detect(t, "Intern")) csv_row$is_internship <- TRUE
+                job_desc <- str_remove_all(job_desc, REGEX_JOB_TIME)
+              }
+
+              # parse salary
+              t <- str_match(job_desc, REGEX_SALARY_RANGE)
+              if (3 <= ncol(t) && !is.na(t[1,1:3]))
+              {
+                csv_row$salary_min <- strtoi(str_remove_all(t[1,2], ","))
+                csv_row$salary_max <- strtoi(str_remove_all(t[1,3], ","))
+                job_desc <- str_remove_all(job_desc, REGEX_SALARY_RANGE)
+              }
+
+              # remove prefix
+              job_desc <- str_replace(job_desc, "^Job details", "")
+
+              # add remaining fields
+              csv_row$job_location <- job_location
+              csv_row$job_title <- str_replace(job_title, "\\+", " ")
+              csv_row$job_id <- job_id
+              csv_row$job_desc <- job_desc
+
+              # add to csv
+              i <- row_index
+              df[i,] <<- csv_row
+              row_index <<- row_index + 1
             }
-
-            # parse salary
-            t <- str_match(job_desc, REGEX_SALARY_RANGE)
-            if (3 <= ncol(t) && !is.na(t[1,1:3]))
-            {
-              csv_row$salary_min <- strtoi(str_remove_all(t[1,2], ","))
-              csv_row$salary_max <- strtoi(str_remove_all(t[1,3], ","))
-              job_desc <- str_remove_all(job_desc, REGEX_SALARY_RANGE)
-            }
-
-            # remove prefix
-            job_desc <- str_replace(job_desc, "^Job details", "")
-
-            # add remaining fields
-            csv_row$job_location <- job_location
-            csv_row$job_title <- str_replace(job_title, "\\+", " ")
-            csv_row$job_id <- job_id
-            csv_row$job_desc <- job_desc
-
-            # add to csv
-            i <- row_index
-            df[i,] <<- csv_row
-            row_index <<- row_index + 1
           }
   )
 
