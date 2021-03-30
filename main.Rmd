@@ -13,9 +13,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 library(tidyjson)
+library(jsonlite)
 ```
 
 # Project 2
+
+## Introduction
+
+The data provided to us for this report is a scraped job postings from [indeed.com](https://www.indeed.com/ "https://www.indeed.com/"). They were scraped from September 2020 to March 2021, in four distinct scrapes.
 
 ## The data
 
@@ -31,18 +36,16 @@ indeed_2021 <- fromJSON("Indeed_data/indeed_job_descs_2021_01_25.json")
 
 Here is an example of the list of categories, and associated characteristics.
 
-```{r echo=FALSE}
+```{r include=FALSE}
 df_json20 <- indeed_2020_raw %>% 
   map_if(is.data.frame, list) %>% 
   as_tibble()
 
-head(df_json20$request_params)
+# head(df_json20$request_params)
 
 request_parameters <- as.data.frame(df_json20$request_params)
 
 ```
-
-Here is an example of a job description:
 
 ```{r echo=FALSE}
 #list, because of nested format? 
@@ -52,6 +55,13 @@ job_descriptions <- df_json20$job_descriptions
 
 job_categories <- request_parameters$q
 
+full_df <- read.csv("Indeed_data/merged.csv")
+
+full_df %>% 
+  group_by(job_title) %>% 
+  summarise(n = n())
+
+factor(full_df$job_title)
 ```
 
 ### Can the data be representative?
@@ -60,11 +70,9 @@ job_categories <- request_parameters$q
 job_categories
 ```
 
-First, there are only 16 categories here. Definitely not a comprehensive view of the job market, so if you are really set about going into a field that is not listed, this loop project explained below would not be a good fit. 
+First, there are only 16 categories here. Definitely not a comprehensive view of the job market, so if you are really set about going into a field that is not listed, this loop project explained below would not be a good fit.
 
 Another question that would be reasonable to ask is what is the distribution of job postings per category?
-
-
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # They are all in new york so I'm throwing out the state column
@@ -105,29 +113,29 @@ ggplot(data = na_numbers, aes(x = category, y = non_na_count)) +
 
 ```
 
-
-Hopefully you don't want to be a HR specialist because the data is not as comprehensive than the rest. But otherwise, it seems to be very equal across the categories. 
-
+Hopefully you don't want to be a HR specialist because the data is not as comprehensive than the rest. But otherwise, it seems to be very equal across the categories.
 
 Here is an (shortened) example of how it appears in JSON:
 
 > "2ccc2596d13c54d4": "Job to be done\nWe\u2019re the best way to get better.\n\nAbout Buoy Health:\nBuoy builds a digital health tool that helps people \u2013 from the moment they get sick \u2013 start their health care on the right foot. Started by a team of doctors and computer scientists working at the Harvard Innovation Laboratory in Boston MA, Buoy was developed in direct response to the downward spiral we\u2019ve all faced when we attempt to self-diagnose our symptoms online...."
 
 ### Data Quality Issue
-Some companies appear to have gotten lazy in their copy and pasting between websites and have smashed some words together. Because it is a rare enough occurrence, it will hopefully not have a large effect on the data. 
 
+Some companies appear to have gotten lazy in their copy and pasting between websites and have smashed some words together. Because it is a rare enough occurrence, it will hopefully not have a large effect on the data.
 
 ## Tokenize the data
 
-```{r}
+```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 unnest(df_json20, cols = )
 ```
 
+## Data processing
+
+Our initial goal was to convert the data into a cosine similarity matrix. For more complex data like this, this type of data interpretation was convenient because we didn't have to find a more clever way of normalizing the data.
 
 ```{r}
-# doesn't work for second category
-# long_df
+cosine_matrix <- read.csv("Indeed_data/cos_dissm_mat.csv.gz")
+
+
+
 ```
-
-
-
