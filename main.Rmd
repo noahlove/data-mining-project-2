@@ -181,6 +181,13 @@ top_per_category_noah <- cossim_noah_tibble %>%
 
 top_per_category_noah
 
+top_3_jobs <- top_per_category_noah %>% 
+  ungroup() %>% 
+  top_n(3, cos_simil) %>% 
+  select(job_title, job_desc, job_location)
+
+top_3_jobs
+
 ```
 
 
