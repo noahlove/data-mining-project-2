@@ -167,6 +167,44 @@ head(cossim_noah, 10)
 ```
 
 ```{r}
+prune_jobs_with_identical_sentences <- function(data, word_count = 8)
+{
+    result <- data
+
+    while (1)
+    {
+        xit <- itoken(
+          result$job_desc, # where to tokenize
+          preprocessor = tolower, # How to preprocess
+          tokenizer = word_tokenizer, # what tokenizer
+          ids = result$job_id, # keep id as identifier
+          progressbar = FALSE
+        )
+
+        xvocab <- create_vocabulary(xit, ngram = c(word_count,word_count))
+
+        xvocab <- prune_vocabulary(xvocab, doc_count_min = 2)
+        if (nrow(xvocab) == 0) break
+
+        xvocab <- xvocab[xvocab$doc_count == max(xvocab$doc_count),]
+        if (nrow(xvocab) == 0) break
+
+        xvocab <- xvocab[1,]
+
+        xvectorizer <- vocab_vectorizer(xvocab)
+        xdtm <- as.data.frame(as.matrix(create_dtm(xit, xvectorizer)))
+        colnames(xdtm) <- 'target'
+
+        dups <- rownames(xdtm %>% filter(target > 0))
+        dups <- dups[2:length(dups)]
+
+        result <- filter(result, !(job_id %in% dups))
+    }
+
+    result
+}
+
+
 # noah resume work
 cossim_noah_tibble <- cossim_noah %>% 
   rownames_to_column(var = "job_id") %>% 
@@ -181,6 +219,8 @@ cossim_noah_tibble <- cossim_noah_tibble %>%
 top_per_category_noah <- cossim_noah_tibble %>% 
   group_by(job_title) %>% 
   top_n(1, cos_simil)
+
+top_per_category_noah <- prune_jobs_with_identical_sentences(top_per_category_noah)
 
 # top_per_category_noah
 
@@ -213,6 +253,8 @@ top_per_category_ido <- cossim_ido_tibble %>%
   group_by(job_title) %>% 
   top_n(1, cos_simil)
 
+top_per_category_ido <- prune_jobs_with_identical_sentences(top_per_category_ido)
+
 # top_per_category_ido
 
 top_3_jobs <- top_per_category_ido %>% 
@@ -221,6 +263,9 @@ top_3_jobs <- top_per_category_ido %>%
   select(job_title, job_desc, job_location)
 
 top_3_jobs
+
+```
+```{r}
 
 ```
 
