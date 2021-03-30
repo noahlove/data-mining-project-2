@@ -175,6 +175,9 @@ cossim_noah_tibble <- cossim_noah %>%
   arrange(cos_simil, ascending =TRUE)  %>% 
   merge(full_df)
 
+cossim_noah_tibble <- cossim_noah_tibble %>% 
+  distinct(job_desc, .keep_all = TRUE)
+
 top_per_category_noah <- cossim_noah_tibble %>% 
   group_by(job_title) %>% 
   top_n(1, cos_simil)
@@ -200,6 +203,11 @@ cossim_ido_tibble <- cossim_ido %>%
   rename(cos_simil = `RESUME (IDO)`) %>% 
   arrange(cos_simil, ascending =TRUE)  %>% 
   merge(full_df)
+
+# remove duplicates
+
+cossim_ido_tibble <- cossim_ido_tibble %>% 
+  distinct(job_desc, .keep_all = TRUE)
 
 top_per_category_ido <- cossim_ido_tibble %>% 
   group_by(job_title) %>% 
