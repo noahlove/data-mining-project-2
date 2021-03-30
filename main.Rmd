@@ -34,27 +34,9 @@ indeed_2021 <- fromJSON("Indeed_data/indeed_job_descs_2021_01_25.json")
 
 ### Clean up the data
 
-Here is an example of the list of categories, and associated characteristics.
-
-```{r include=FALSE}
-df_json20 <- indeed_2020_raw %>% 
-  map_if(is.data.frame, list) %>% 
-  as_tibble()
-
-# head(df_json20$request_params)
-
-request_parameters <- as.data.frame(df_json20$request_params)
-
-```
+Our first major choice was to combine all four data sets (different dates) into one large csv. None of our questions necessarily related to the time aspect of the data so we chose to just unify them. Here is an example of the list of categories, and associated characteristics.
 
 ```{r echo=FALSE}
-#list, because of nested format? 
-job_descriptions <- df_json20$job_descriptions
-
-#what types of jobs
-
-job_categories <- request_parameters$q
-
 full_df <- read.csv("Indeed_data/merged.csv")
 
 job_positions <- full_df %>% 
@@ -78,7 +60,7 @@ ggplot(data = job_positions, aes(x = job_title, y = n)) +
 
 ```
 
-Hopefully you don't want to be a HR specialist because the data is not as comprehensive than the rest. But otherwise, it seems to be very equal across the categories.
+Hopefully you don't want to be a data journalist because the data is not as comprehensive than the rest. But otherwise, it seems to be very equal across the categories. Otherwise, for the categories mentioned, it seems that the data is representative and could be very useful in a job hunt if you have interests in the related field. 
 
 Here is an (shortened) example of how it appears in JSON:
 
@@ -95,7 +77,7 @@ Some companies appear to have gotten lazy in their copy and pasting between webs
 
 Our initial goal was to convert the data into a cosine similarity matrix. For more complex data like this, this type of data interpretation was convenient because we didn't have to find a more clever way of normalizing the data.
 
-```{r}
+```{r, cache = TRUE}
 cosine_matrix <- read.csv("Indeed_data/cos_dissm_mat.csv.gz")
 
 ```
