@@ -120,16 +120,16 @@ user_full <- full_df %>%
   add_row(job_id = "RESUME (IDO)", job_desc = ido_input, job_location = "A") %>%
   arrange(job_location)
 
-head(user_full, 4)
+# head(user_full, 4) # make sure user was added
 ```
 
 
 ```{r}
 it <- itoken(
-  user_full$job_desc,
-  preprocessor = tolower,
-  tokenizer = word_tokenizer,
-  ids = user_full$job_id,
+  user_full$job_desc, # where to tokenize
+  preprocessor = tolower, # How to preprocess
+  tokenizer = word_tokenizer, # what tokenizer
+  ids = user_full$job_id, # keep id as identifier
   progressbar = FALSE
 )
 
@@ -138,7 +138,7 @@ stop_words <- c("a","an","and","are","as","at","be","by","for","from","have","in
 vocab <- create_vocabulary(
   it,
   stopwords = stop_words,
-  ngram = c(1L, 2L)
+  ngram = c(1L, 3L)
 )
 
 tail(vocab, 5)
@@ -158,17 +158,18 @@ cossim <- as.data.frame(as.matrix(sim2(
   norm = "l2"
 )))
 ```
+
 ```{r}
 cossim_noah <- cossim %>% select(1)
 cossim_ido <- cossim %>% select(2)
 
 head(cossim_noah, 10)
 ```
+
 ```{r}
 #re-add job characteristics
 
 #bind_rows based on job id, need job category attached again
-
 ```
 
 
