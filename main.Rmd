@@ -14,6 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(tidyjson)
 library(jsonlite)
+library(text2vec)
+library(data.table)
 ```
 
 # Project 2
@@ -97,7 +99,102 @@ The data was then tokenized using the package text2vec. Once the job description
 ```{r, cache = TRUE}
 cosine_matrix <- as_tibble(read.csv("Indeed_data/cos_dissm_mat.csv.gz"))
 
-cosine_matrix[1:5, 1:5]
+cosine_matrix[1:4, 1:4]
 ```
+
+## User Input
+Now, we will ask for user input, in a somewhat manual way. Based on your resume, we we choose keywords from previous job positions, courses and trainings that you think would be relavent to your job search. 
+
+How does this help? We will turn the words that are entered from your resume into a unique tokenized string as well. This will be put into the cosine similarity matrix and we can compare which job postings you have the most in common with. Using the post ID, we can then filter the job postings such that you can get 3 recommendations from 3 distinct Indeed job catagories to give you a variety of options to choose from. 
+
+```{r}
+noah_input <- "Coins Gold Bullion Banking Diamonds Website Development Software Coding Programming Hedge Investment Fund Social Media"
+
+ido_input <-  "Coding" #Add some keywords here
+```
+
+```{r}
+# Add user to csv, should need "description" and "job id"
+user_full <- full_df %>% add_row(job_id = "NOAH's RESUME", job_desc = noah_input, job_location = "A") %>% 
+  add_row(job_id = "NOAH's RESUME", job_desc = ido_input, job_location = "A") %>% 
+  arrange(job_location)
+
+#user_full
+```
+
+
+```{r}
+# data <- read.csv("Indeed_data/merged.csv")
+# data$is_fulltime <- as.logical(data$is_fulltime)
+# data$is_contract <- as.logical(data$is_contract)
+# data$is_parttime <- as.logical(data$is_parttime)
+# data$is_internship <- as.logical(data$is_internship)
+# data$salary_min <- as.integer(data$salary_min)
+# data$salary_max <- as.integer(data$salary_max)
+# data$to_parse <- rep(NA, nrow(data))
+# 
+# for (i in seq_len(nrow(data)))
+# {
+#   row <- data[i,]
+# 
+#   x <- paste(row$job_location, row$job_title, row$job_desc)
+#   if (row$is_fulltime) x <- paste(x, "fulltime full time ")
+#   if (row$is_parttime) x <- paste(x, "parttime part time ")
+#   if (row$is_internship) x <- paste(x, "internship ")
+#   if (row$is_contract) x <- paste(x, "contract ")
+# 
+#   row$to_parse <- x
+#   data[i,] <- row
+# }
+# 
+# it <- itoken(
+#   data$to_parse,
+#   preprocessor = tolower,
+#   tokenizer = word_tokenizer,
+#   ids = data$job_id,
+#   progressbar = FALSE
+# )
+# 
+# stop_words <- c("a","an","and","are","as","at","be","by","for","from","have","in","is","i","not","of","on","or","other","our","ours","that","the","their","this","to","we","who","with","you","your","yours","me","my","myself","ourselves","")
+# 
+# vocab <- create_vocabulary(
+#         it,
+#         stopwords = stop_words,
+#         # ngram = c(1L, 2L)
+# )
+# 
+# tail(vocab, 5)
+# 
+# vectorizer <- vocab_vectorizer(vocab)
+# dtm <- create_dtm(it, vectorizer)
+# print(dim(dtm))
+# 
+# tfidf <- TfIdf$new()
+# dtm_tfidf <- fit_transform(dtm, tfidf)
+# 
+# cos_dissm <- sim2(
+#   x = dtm_tfidf,
+#   method = "cosine",
+#   norm = "l2"
+# )
+# 
+# cos_dissm[1:2, 1:5]
+# 
+# write.csv(
+#   as.matrix(cos_dissm),
+#   row.names = TRUE,
+#   file = gzfile("Indeed_data/cos_dissm_mat.csv.gz", "w+b")
+# )
+# 
+# cos_dissm_2 <- read.csv(file = gzfile("Indeed_data/cos_dissm_mat.csv.gz"), stringsAsFactors = FALSE)
+
+```
+```{r}
+#re-add job characteristics
+
+#bind_rows based on job id, need job category attached again
+
+```
+
 
 
