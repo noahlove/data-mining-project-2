@@ -167,7 +167,7 @@ head(cossim_noah, 10)
 ```
 
 ```{r}
-
+# noah resume work
 cossim_noah_tibble <- cossim_noah %>% 
   rownames_to_column(var = "job_id") %>% 
   as_tibble() %>% 
@@ -182,6 +182,32 @@ top_per_category_noah <- cossim_noah_tibble %>%
 top_per_category_noah
 
 top_3_jobs <- top_per_category_noah %>% 
+  ungroup() %>% 
+  top_n(3, cos_simil) %>% 
+  select(job_title, job_desc, job_location)
+
+top_3_jobs
+
+
+```
+
+```{r}
+# Ido results
+
+cossim_ido_tibble <- cossim_ido %>% 
+  rownames_to_column(var = "job_id") %>% 
+  as_tibble() %>% 
+  rename(cos_simil = `RESUME (IDO)`) %>% 
+  arrange(cos_simil, ascending =TRUE)  %>% 
+  merge(full_df)
+
+top_per_category_ido <- cossim_ido_tibble %>% 
+  group_by(job_title) %>% 
+  top_n(1, cos_simil)
+
+top_per_category_ido
+
+top_3_jobs <- top_per_category_ido %>% 
   ungroup() %>% 
   top_n(3, cos_simil) %>% 
   select(job_title, job_desc, job_location)
