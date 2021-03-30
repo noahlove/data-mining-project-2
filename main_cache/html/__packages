@@ -10,3 +10,5 @@ stringr
 forcats
 tidyjson
 jsonlite
+text2vec
+data.table
