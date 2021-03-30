@@ -56,12 +56,23 @@ ggplot(data = job_positions, aes(x = job_title, y = n)) +
   geom_bar(stat = "identity", fill = "steelblue") +
   ggtitle("Distribution of the jobs by category for 2020") +
   coord_flip() +
-  theme_light()
+  theme_light()+
+  labs(x = "Job Title", y = "Number of jobs in the category")
 
 ```
 
 Hopefully you don't want to be a data journalist because the data is not as comprehensive than the rest. But otherwise, it seems to be very equal across the categories. Otherwise, for the categories mentioned, it seems that the data is representative and could be very useful in a job hunt if you have interests in the related field. 
 
+```{r}
+full_df %>% 
+  group_by(job_location) %>% 
+  summarise(n = n()) %>% 
+  ggplot(aes(x = job_location, y = n)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  ggtitle("Where are the jobs?") +
+  labs(x = "State", y = "Number of jobs")
+```
+The data is likely most lacking in location. For people that were hoping for rural jobs, or maybe remote jobs, the data scraped is specifically focused on California and New York State which is not for everyone. 
 
 ## Tokenize the data
 
@@ -77,7 +88,7 @@ Here is an (shortened) example of how each job postings appears in JSON:
 
 ### Data Quality Issue
 
-Some companies appear to have gotten lazy in their copy and pasting between websites and have smashed some words together. Because it is a rare enough occurrence, it will hopefully not have a large effect on the data.
+Some companies appear to have gotten lazy in their copy and pasting between websites and have smashed some words together. Because it is a rare enough occurrence, it will hopefully not have a large effect on the data. 
 
 
 
