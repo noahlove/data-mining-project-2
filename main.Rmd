@@ -167,9 +167,20 @@ head(cossim_noah, 10)
 ```
 
 ```{r}
-#re-add job characteristics
 
-#bind_rows based on job id, need job category attached again
+cossim_noah_tibble <- cossim_noah %>% 
+  rownames_to_column(var = "job_id") %>% 
+  as_tibble() %>% 
+  rename(cos_simil = `RESUME (NOAH)`) %>% 
+  arrange(cos_simil, ascending =TRUE)  %>% 
+  merge(full_df)
+
+top_per_category_noah <- cossim_noah_tibble %>% 
+  group_by(job_title) %>% 
+  top_n(1, cos_simil)
+
+top_per_category_noah
+
 ```
 
 
