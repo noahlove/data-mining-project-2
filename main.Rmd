@@ -74,7 +74,7 @@ full_df %>%
 ```
 The data is likely most lacking in location. For people that were hoping for rural jobs, or maybe remote jobs, the data scraped is specifically focused on California and New York State which is not for everyone. 
 
-## Tokenize the data
+## Wrangle the data
 
 We wrangled all of these into a csv format for easier working. The data frame gives job location, salary minimum and maximum (rare), separate columns for different types of job positions (full time, part time, contract or internship) as well as job title (category), job_id (distinct id number from Indeed) and the job description from the company.
 
@@ -90,12 +90,14 @@ Here is an (shortened) example of how each job postings appears in JSON:
 
 Some companies appear to have gotten lazy in their copy and pasting between websites and have smashed some words together. Because it is a rare enough occurrence, it will hopefully not have a large effect on the data. 
 
-
-
 ## Data processing
 
-Our initial goal was to convert the data into a cosine similarity matrix. For more complex data like this, this type of data interpretation was convenient because we didn't have to find a more clever way of normalizing the data.
+The data was then tokenized using the package text2vec. Once the job descriptions were tokenized, then we could proceed to create a cosine similarity matrix for the job postings, identified by their Indeed ID. Cosine similiarity is a measure of similarity between two vectors, in this case two job postings. The values range from 0 to 1 (the same posting). This method was chosen because of the type of data. Instead of having to come up with a clever data normalization technique due to some companies being incredibly verbose while others are super brief, this takes care of that instead.
 
 ```{r, cache = TRUE}
-cosine_matrix <- read.csv("Indeed_data/cos_dissm_mat.csv.gz")
+cosine_matrix <- as_tibble(read.csv("Indeed_data/cos_dissm_mat.csv.gz"))
+
+cosine_matrix[1:5, 1:5]
 ```
+
+
