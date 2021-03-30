@@ -37,7 +37,7 @@ indeed_2021 <- fromJSON("Indeed_data/indeed_job_descs_2021_01_25.json")
 Our first major choice was to combine all four data sets (different dates) into one large csv. None of our questions necessarily related to the time aspect of the data so we chose to just unify them. Here is an example of the list of categories, and associated characteristics.
 
 ```{r echo=FALSE}
-full_df <- read.csv("Indeed_data/merged.csv")
+full_df <- as_tibble(read.csv("Indeed_data/merged.csv"))
 
 job_positions <- full_df %>% 
   group_by(job_title) %>% 
@@ -62,7 +62,16 @@ ggplot(data = job_positions, aes(x = job_title, y = n)) +
 
 Hopefully you don't want to be a data journalist because the data is not as comprehensive than the rest. But otherwise, it seems to be very equal across the categories. Otherwise, for the categories mentioned, it seems that the data is representative and could be very useful in a job hunt if you have interests in the related field. 
 
-Here is an (shortened) example of how it appears in JSON:
+
+## Tokenize the data
+
+We wrangled all of these into a csv format for easier working. The data frame gives job location, salary minimum and maximum (rare), separate columns for different types of job positions (full time, part time, contract or internship) as well as job title (category), job_id (distinct id number from Indeed) and the job description from the company.
+
+```{r message=FALSE, warning=FALSE}
+glimpse(full_df)
+```
+
+Here is an (shortened) example of how each job postings appears in JSON:
 
 > "2ccc2596d13c54d4": "Job to be done\nWe\u2019re the best way to get better.\n\nAbout Buoy Health:\nBuoy builds a digital health tool that helps people \u2013 from the moment they get sick \u2013 start their health care on the right foot. Started by a team of doctors and computer scientists working at the Harvard Innovation Laboratory in Boston MA, Buoy was developed in direct response to the downward spiral we\u2019ve all faced when we attempt to self-diagnose our symptoms online...."
 
@@ -70,7 +79,6 @@ Here is an (shortened) example of how it appears in JSON:
 
 Some companies appear to have gotten lazy in their copy and pasting between websites and have smashed some words together. Because it is a rare enough occurrence, it will hopefully not have a large effect on the data.
 
-## Tokenize the data
 
 
 ## Data processing
@@ -79,5 +87,4 @@ Our initial goal was to convert the data into a cosine similarity matrix. For mo
 
 ```{r, cache = TRUE}
 cosine_matrix <- read.csv("Indeed_data/cos_dissm_mat.csv.gz")
-
 ```
