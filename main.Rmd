@@ -57,59 +57,24 @@ job_categories <- request_parameters$q
 
 full_df <- read.csv("Indeed_data/merged.csv")
 
-full_df %>% 
+job_positions <- full_df %>% 
   group_by(job_title) %>% 
   summarise(n = n())
 
-factor(full_df$job_title)
+job_positions
+
 ```
 
-### Can the data be representative?
-
-```{r echo=FALSE}
-job_categories
-```
-
-First, there are only 16 categories here. Definitely not a comprehensive view of the job market, so if you are really set about going into a field that is not listed, this loop project explained below would not be a good fit.
+First, there are only 25 categories here. Definitely not a comprehensive view of the job market, so if you are really set about going into a field that is not listed, this loop project explained below would not be a good fit. However, for most people majoring in statistics or computer science, this might provide a nice survey of various jobs. 
 
 Another question that would be reasonable to ask is what is the distribution of job postings per category?
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-# They are all in new york so I'm throwing out the state column
-# unique(long_df$l)
-
-#Similarly, there is only full time positions available.
-#unique(long_df$part_or_full)
-
-#convert to long tibble instead of wide
-
-#There is still a problem here. Some of these don't keep the description for some reason
-
-unnested_dataframe <- unnest(df_json20, cols = )
-
-dim(unnested_dataframe)
-
-#unnested_dataframe  # this shows unnesting works appropriately
-
-long_df <- unnested_dataframe %>% 
-  pivot_longer(cols = 5:574, names_to = "post_id", values_to = "description", values_drop_na = FALSE) %>% # it is this line that messes things up, it appears that every other category is appropriately grouped into the column.
-  select(-l, -jt) %>% 
-  rename(category = q)
-
-long_df
-
-```
-
 ```{r}
-#see how many na per group
-na_numbers <- long_df %>% 
-  group_by(category) %>% 
-  summarise(non_na_count = sum(!is.na(description)))
-
-ggplot(data = na_numbers, aes(x = category, y = non_na_count)) + 
-  geom_bar(stat = "identity") + 
-  ggtitle("Distribution of the jobs by category for 2020") + 
-  coord_flip()
+ggplot(data = job_positions, aes(x = job_title, y = n)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  ggtitle("Distribution of the jobs by category for 2020") +
+  coord_flip() +
+  theme_light()
 
 ```
 
@@ -125,9 +90,6 @@ Some companies appear to have gotten lazy in their copy and pasting between webs
 
 ## Tokenize the data
 
-```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
-unnest(df_json20, cols = )
-```
 
 ## Data processing
 
@@ -135,7 +97,5 @@ Our initial goal was to convert the data into a cosine similarity matrix. For mo
 
 ```{r}
 cosine_matrix <- read.csv("Indeed_data/cos_dissm_mat.csv.gz")
-
-
 
 ```
