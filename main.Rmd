@@ -2,7 +2,9 @@
 title: "Project 2 - Job Hunt"
 author: "Noah Love and Ido Li On"
 date: "3/4/2021"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -17,7 +19,7 @@ library(jsonlite)
 library(text2vec)
 library(data.table)
 ```
-
+Code for the project can be found [here]("https://github.com/noahlove/data-mining-project-2.git")
 
 ## Introduction
 
