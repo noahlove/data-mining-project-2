@@ -177,7 +177,9 @@ cossim <- as.data.frame(as.matrix(sim2(
 )))
 ```
 
-Here is an example of the cosine similarity matrix. Noah's resume is the same as itself so it has a similarity of 1. It is also interestingly almost nothing like Ido's (very close to 0). In this way, the similarity provides a metric for how similar or "good" the match is to our resume and provided terms.
+Here is an example of the cosine similarity matrix. Noah's resume is the same as itself so it has a similarity of 1. It is also interestingly almost nothing like Ido's (very close to 0). In such a way, the two user inputs actually serve as a great example of how different strings show as very dissimilar and wouldn't be recommended. Ironically, we worked great as partners so maybe our user input isn't completed representative of us. 
+
+In this way, the similarity score provides a metric for how similar or "good" the match is to our resume and provided terms. 
 
 
 ```{r echo=FALSE}
@@ -252,19 +254,38 @@ top_per_category_noah
 top_3_jobs <- top_per_category_noah %>% 
   ungroup() %>% 
   top_n(3, cos_simil) %>% 
-  select(job_title, job_desc, job_location)
+  select(job_title, job_desc, job_location, cos_simil)
+
+
+bottom_one <- top_per_category_noah %>% 
+  ungroup() %>% 
+  top_n(-1, cos_simil) %>% 
+  select(job_title, job_desc, job_location, cos_simil)
 
 
 ```
+
+
+
+
 ### Data issues and creating additional diversity
 One of the largest issues with getting a diverse selection of jobs is preventing the same company from being chosen multiple times. For example, many companies even cross posted the exact same job into two separate categories. Or they would post the exact same job, but have a different ID because they were hoping to fill the job in California and New York separately. 
 
 To fix these issues, we found there were two fixes. First, duplicate entries, with the exact same (word-for-word) job description were deleted. Second, we used n-grams to delete jobs from the same company. We noticed that companies would post a brief description about the company in the job description, so we could filter through them using duplicate n-grams. If two job descriptions had 8 words in a row duplicated with another job description, one of them was pruned from our data. This prevented Ido for example from recieving 3 Palo Alto job recommendations. 
 
+
 ### Ensuring diverse jobs
 Our way of ensuring diverse jobs and provide interesting choices was to use the job categories provided by indeed. Very few jobs were extremely similar across categories, as there aren't a lot of similar words in a marketing job as an actuary. So after finding the top job in each category, we selected the top across those 25 categories. As a result, we found that for various strings, there were often two somewhat similar category jobs but then one much more diverse. As a result, it is likely you miss out on some more fitted jobs in the name of a more diverse selection but this makes job hunting a lot more fun. 
 
-Here is the output for each of us for example:
+However, just by choosing top by category doesn't mean we will be similar to that category. In fact, even the "best" job for someone in the category might still be really bad. For example, Noah's "worst" of all the categories can be seen below, a full stack engineer (for Vox), a position he is not well equipped for and decently far from his chosen input. 
+
+```{r}
+bottom_one
+```
+
+
+
+However, the top three look very promising, good and diverse:
 
 
 ```{r echo=FALSE}
@@ -272,8 +293,13 @@ Here is the output for each of us for example:
 top_3_jobs
 
 ```
+As an example of a good match, here is one of my top results.
 
+```{r echo=FALSE}
+example_good <- head(top_3_jobs %>% pull(2,1), 1)
 
+str_trunc(example_good, 500, "right")
+```
 
 
 
@@ -308,6 +334,8 @@ top_3_jobs <- top_per_category_ido %>%
 top_3_jobs
 
 ```
+
+
 
 
 ### Measuring Diversity
@@ -346,7 +374,8 @@ cossim <- as.data.frame(as.matrix(sim2(
 
 cossim
 
-div_score <- mean(cossim[1,2],cossim[1,3],cossim[2,3])
+div_score <- sum(cossim[1,2],cossim[1,3],cossim[2,3])/3
+
 
 cat("Div. Score:" , div_score)
 ```
