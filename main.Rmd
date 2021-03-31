@@ -3,8 +3,8 @@ title: "Project 2 - Job Hunt"
 author: "Noah Love and Ido Li On"
 date: "3/4/2021"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
