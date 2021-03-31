@@ -1,5 +1,5 @@
 ---
-title: "Main-Project"
+title: "Project 2 - Job Hunt"
 author: "Noah Love and Ido Li On"
 date: "3/4/2021"
 output: html_document
@@ -18,7 +18,6 @@ library(text2vec)
 library(data.table)
 ```
 
-# Project 2
 
 ## Introduction
 
@@ -27,12 +26,6 @@ The data provided to us for this report is a scraped job postings from [indeed.c
 ## The data
 
 So the data is presented in a json file. It is a list of 16 (or 20 for 2021) lists, each representing a unique job category: i.e. ux designer, recruiter or marketing. Within each of the 16 lists, are 2 lists: the first is a list of 4, describing position, location, job time (full or part time), and start time. The second list contains job descriptions associated with that job category.
-
-```{r echo=FALSE}
-indeed_2020_raw <- fromJSON("Indeed_data/indeed_job_descs_2020_09_20.json")
-
-indeed_2021 <- fromJSON("Indeed_data/indeed_job_descs_2021_01_25.json")
-```
 
 ### Clean up the data
 
@@ -53,7 +46,7 @@ First, there are only 25 categories here. Definitely not a comprehensive view of
 
 Another question that would be reasonable to ask is what is the distribution of job postings per category?
 
-```{r}
+```{r message=FALSE, warning=FALSE, include=FALSE}
 ggplot(data = job_positions, aes(x = job_title, y = n)) +
   geom_bar(stat = "identity", fill = "steelblue") +
   ggtitle("Distribution of the jobs by category for 2020") +
@@ -65,7 +58,7 @@ ggplot(data = job_positions, aes(x = job_title, y = n)) +
 
 Hopefully you don't want to be a data journalist because the data is not as comprehensive than the rest. But otherwise, it seems to be very equal across the categories. Otherwise, for the categories mentioned, it seems that the data is representative and could be very useful in a job hunt if you have interests in the related field. 
 
-```{r}
+```{r include=FALSE}
 full_df %>% 
   group_by(job_location) %>% 
   summarise(n = n()) %>% 
@@ -80,7 +73,7 @@ The data is likely most lacking in location. For people that were hoping for rur
 
 We wrangled all of these into a csv format for easier working. The data frame gives job location, salary minimum and maximum (rare), separate columns for different types of job positions (full time, part time, contract or internship) as well as job title (category), job_id (distinct id number from Indeed) and the job description from the company.
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, include=FALSE}
 glimpse(full_df)
 ```
 
@@ -96,7 +89,7 @@ Some companies appear to have gotten lazy in their copy and pasting between webs
 
 The data was then tokenized using the package text2vec. Once the job descriptions were tokenized, then we could proceed to create a cosine similarity matrix for the job postings, identified by their Indeed ID. Cosine similiarity is a measure of similarity between two vectors, in this case two job postings. The values range from 0 to 1 (the same posting). This method was chosen because of the type of data. Instead of having to come up with a clever data normalization technique due to some companies being incredibly verbose while others are super brief, this takes care of that instead.
 
-```{r, cache = TRUE}
+```{r cache=FALSE, include=FALSE}
 cosine_matrix <- as_tibble(read.csv("Indeed_data/cos_dissm_mat.csv.gz"))
 
 cosine_matrix[1:4, 1:4]
@@ -108,12 +101,12 @@ Now, we will ask for user input, in a somewhat manual way. Based on your resume,
 How does this help? We will turn the words that are entered from your resume into a unique tokenized string as well. This will be put into the cosine similarity matrix, and we can compare which job postings you have the most in common with. Using the post ID, we can then filter the job postings such that you can get 3 recommendations from 3 distinct Indeed job categories to give you a variety of options to choose from.
 
 ```{r}
-noah_input <- "Coins Gold Bullion Banking Diamonds Website Development Software Coding Programming Hedge Investment Fund Social Media"
+noah_input <- "Coins Gold Bullion Banking Diamonds Website Development Software Coding Programming Hedge Investment Fund Social Media Student Salesman Entrepreneurship, Startup, Incubator, HTML, R, Python"
 
 ido_input <-  "Programming Cybersecurity Networks Reverse Engineering"
 ```
 
-```{r}
+```{r include=FALSE}
 # Add user to csv, should need "description" and "job id"
 user_full <- full_df %>%
   add_row(job_id = "RESUME (NOAH)", job_desc = noah_input, job_location = "A") %>%
@@ -124,7 +117,7 @@ user_full <- full_df %>%
 ```
 
 
-```{r}
+```{r include=FALSE}
 it <- itoken(
   user_full$job_desc, # where to tokenize
   preprocessor = tolower, # How to preprocess
@@ -141,14 +134,15 @@ vocab <- create_vocabulary(
   ngram = c(1L, 3L)
 )
 
-tail(vocab, 5)
+# tail(vocab, 5)
 ```
-```{r}
+```{r include=FALSE}
 vectorizer <- vocab_vectorizer(vocab)
 dtm <- create_dtm(it, vectorizer)
 # dim(dtm)
 ```
-```{r}
+
+```{r include=FALSE}
 tfidf <- TfIdf$new()
 tfidf_dtm <- fit_transform(dtm, tfidf)
 
@@ -159,14 +153,22 @@ cossim <- as.data.frame(as.matrix(sim2(
 )))
 ```
 
-```{r}
+Here is an example of the cosine similarity matrix. Noah's resume is the same as itself so it has a similarity of 1. It is also interestly almost nothing like Ido's (very close to 0). 
+
+
+```{r include=FALSE}
 cossim_noah <- cossim %>% select(1)
 cossim_ido <- cossim %>% select(2)
 
 head(cossim_noah, 10)
 ```
 
-```{r}
+### Data issues and creating additional diversity
+One of the largest issues with getting a diverse selection of jobs is preventing the same company from being chosen multiple times. For example, many companies even cross posted the exact same job into two separate categories. Or they would post the exact same job, but have a different ID because they were hoping to fill the job in California and New York separately. 
+
+To fix these issues, we found there were two fixes. First, duplicate entries, with the exact same (word-for-word) job description were deleted. Second, we used n-grams to delete jobs from the same company. We noticed that companies would post a brief description about the company in the job description, so we could filter through them using duplicate n-grams. If two job descriptions had 8 words in a row duplicated with another job description, one of them was pruned from our data. This prevented Ido for example from recieving 3 Palo Alto job recommendations. 
+
+```{r include=FALSE}
 prune_jobs_with_identical_sentences <- function(data, word_count = 8)
 {
     result <- data
@@ -234,7 +236,7 @@ top_3_jobs
 
 ```
 
-```{r}
+```{r include=FALSE}
 # Ido results
 
 cossim_ido_tibble <- cossim_ido %>% 
@@ -263,9 +265,6 @@ top_3_jobs <- top_per_category_ido %>%
   select(job_title, job_desc, job_location)
 
 top_3_jobs
-
-```
-```{r}
 
 ```
 
