@@ -69,6 +69,23 @@ full_df %>%
 ```
 The data is likely most lacking in location. For people that were hoping for rural jobs, or maybe remote jobs, the data scraped is specifically focused on California and New York State which is not for everyone. 
 
+```{r echo=FALSE}
+
+internship <- sum(as.integer(as.logical(full_df$is_internship)))/length(full_df$is_fulltime)*100
+parttime <- sum(as.integer(as.logical(full_df$is_parttime)))/length(full_df$is_fulltime)*100
+contract <- sum(as.integer(as.logical(full_df$is_contract)))/length(full_df$is_fulltime)*100
+
+special_jobs <- tibble("Percentage of jobs" = c(internship, parttime, contract), "Type of job"= c("Internships", "Part Time Jobs", "Contract Jobs"))
+
+ggplot(data = special_jobs, aes(x = `Type of job`, y = `Percentage of jobs`)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(title = "Percentage of special job types")
+  
+  
+```
+
+
+
 ## Wrangle the data
 
 We wrangled all of these into a csv format for easier working. The data frame gives job location, salary minimum and maximum (rare), separate columns for different types of job positions (full time, part time, contract or internship) as well as job title (category), job_id (distinct id number from Indeed) and the job description from the company.
