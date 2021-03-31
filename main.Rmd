@@ -46,7 +46,7 @@ First, there are only 25 categories here. Definitely not a comprehensive view of
 
 Another question that would be reasonable to ask is what is the distribution of job postings per category?
 
-```{r message=FALSE, warning=FALSE, include=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(data = job_positions, aes(x = job_title, y = n)) +
   geom_bar(stat = "identity", fill = "steelblue") +
   ggtitle("Distribution of the jobs by category for 2020") +
@@ -58,7 +58,7 @@ ggplot(data = job_positions, aes(x = job_title, y = n)) +
 
 Hopefully you don't want to be a data journalist because the data is not as comprehensive than the rest. But otherwise, it seems to be very equal across the categories. Otherwise, for the categories mentioned, it seems that the data is representative and could be very useful in a job hunt if you have interests in the related field. 
 
-```{r include=FALSE}
+```{r echo=FALSE}
 full_df %>% 
   group_by(job_location) %>% 
   summarise(n = n()) %>% 
