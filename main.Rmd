@@ -19,7 +19,7 @@ library(jsonlite)
 library(text2vec)
 library(data.table)
 ```
-Code for the project can be found [here]("https://github.com/noahlove/data-mining-project-2.git")
+Code for the project can be found [here](https://github.com/noahlove/data-mining-project-2.git "https://github.com/noahlove/data-mining-project-2.git")
 
 ## Introduction
 
